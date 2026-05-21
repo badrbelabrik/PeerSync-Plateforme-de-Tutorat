@@ -1,10 +1,10 @@
 <?php
 
 namespace Repositories;
-use config\Database;
 use Entities\User;
 use PDO;
 use PDOException;
+use Config\Database;
 
 class UserRepository
 {

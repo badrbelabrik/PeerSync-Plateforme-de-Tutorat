@@ -1,10 +1,10 @@
 <?php
 
 namespace Repositories;
-use Config\Database;
 use Entities\HelpRequest;
 use PDO;
 use PDOException;
+use Config\Database;
 
 class HelpRequestRepository
 {

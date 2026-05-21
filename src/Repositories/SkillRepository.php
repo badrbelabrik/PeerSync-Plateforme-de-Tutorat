@@ -2,10 +2,10 @@
 
 namespace Repositories;
 
-use Config\Database;
 use Entities\Skill;
 use PDO;
 use PDOException;
+use Config\Database;
 
 class SkillRepository
 {
