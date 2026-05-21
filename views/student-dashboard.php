@@ -1,26 +1,19 @@
 <?php
-declare(strict_types=1);
-
-// 1. Protection de la page : Si l'utilisateur n'est pas connecté, on le vire au login
+// 1. On démarre la session si ce n'est pas fait
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// 2. Si l'utilisateur n'est même pas connecté en session -> Login
 if (!isset($_SESSION['user_id'])) {
-    header('Location: index.php?route=login');
+    header('Location: ../index.php?route=login');
     exit();
 }
 
-// 2. Récupération des données fraîches depuis la BDD via le Repository
-use Repositories\UserRepository;
-
-$userRepo = new UserRepository();
-$currentUser = $userRepo->getUserById((int)$_SESSION['user_id']);
-
-// Si jamais l'utilisateur a été supprimé de la BDD entre-temps
-if (!$currentUser) {
-    session_destroy();
-    header('Location: index.php?route=login');
+// 3. S'il est connecté en session, mais que $currentUser n'existe pas,
+// c'est qu'il a tapé l'URL du fichier en direct. On le redirige vers le vrai routeur !
+if (!isset($currentUser)) {
+    header('Location: ../index.php?route=dashboard');
     exit();
 }
 ?>

@@ -5,27 +5,30 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Nouvel autoloader adapté à tes namespaces sans le préfixe "App"
+// L'autoloader magique
 spl_autoload_register(function ($class) {
-    // On remplace les anti-slashs (\) du namespace par des slashs (/) pour le chemin système
     $classPath = str_replace('\\', '/', $class);
-
-    // Ton dossier racine pour le code est "src"
     $file = __DIR__ . '/src/' . $classPath . '.php';
-
     if (file_exists($file)) {
         require_once $file;
     }
 });
 
-// À la ligne 40, appelle ton contrôleur avec son namespace exact :
 use Controllers\AuthController;
+use Repositories\UserRepository;
 
 $route = $_GET['route'] ?? 'login';
 
 switch ($route) {
     case 'login':
-        $authController = new AuthController(); // Plus d'erreur ici !
+        // 🌟 SÉCURITÉ INVERSÉE : Si l'utilisateur est déjà connecté en session,
+        // on lui interdit l'accès au login et on le renvoie vers le dashboard.
+        if (isset($_SESSION['user_id'])) {
+            header('Location: index.php?route=dashboard');
+            exit();
+        }
+
+        $authController = new AuthController();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $authController->login();
         } else {
@@ -33,5 +36,32 @@ switch ($route) {
         }
         break;
 
-    // ... reste de ton switch ...
+    case 'logout':
+        $authController = new AuthController();
+        $authController->logout();
+        break;
+
+    case 'dashboard':
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: index.php?route=login');
+            exit();
+        }
+
+        // On récupère l'user ici pour la vue
+        $userRepo = new UserRepository();
+        $currentUser = $userRepo->getUserById((int)$_SESSION['user_id']);
+
+        if (!$currentUser) {
+            session_destroy();
+            header('Location: views/student-dashboard.php');
+            exit();
+        }
+
+        require_once __DIR__ . '/views/student-dashboard.php';
+        break;
+
+    default:
+        http_response_code(404);
+        echo "<h1>Page 404 non trouvée</h1>";
+        break;
 }

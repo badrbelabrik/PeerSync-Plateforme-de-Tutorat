@@ -36,7 +36,7 @@ class AuthController
                 $_SESSION['user_firstname'] = $user->getFirstname();
                 $_SESSION['user_role'] = $user->getRole();
 
-                header('Location: /student-dashboard.php');
+                header('Location: index.php?route=dashboard');
                 exit();
             } else {
                 $error = "Identifiants incorrects.";
@@ -51,7 +51,7 @@ class AuthController
             session_start();
         }
         session_destroy();
-        header('Location: /login');
+        header('Location: index.php');
         exit();
     }
 }
