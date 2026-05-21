@@ -15,4 +15,44 @@ class UserBadge
         $this->badge = $badge;
         $this->id = $id;
     }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getDate(): string
+    {
+        return $this->date;
+    }
+
+    public function setDate(string $date): void
+    {
+        $this->date = $date;
+    }
+
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): void
+    {
+        $this->user = $user;
+    }
+
+    public function getBadge(): Badge
+    {
+        return $this->badge;
+    }
+
+    public function setBadge(Badge $badge): void
+    {
+        $this->badge = $badge;
+    }
 }
