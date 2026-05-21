@@ -32,5 +32,5 @@ class HelpRequestRepository
             return false;
         }
     }
-    
+
 }

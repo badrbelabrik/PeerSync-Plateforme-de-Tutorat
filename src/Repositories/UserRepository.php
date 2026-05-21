@@ -19,17 +19,17 @@ class UserRepository
             $sql = "SELECT * FROM users WHERE id = ?";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$id]);
-            $user = $stmt->fetch(PDO::FETCH_OBJ);
+            $user = $stmt->fetch();
             if(!$user){
                 return null;
             }
             return new User(
-                $user->firstname,
-                $user->lastname,
-                $user->email,
-                $user->id_role,
-                (int)($user->points ?? 0),
-                $user->id
+                $user['firstname'],
+                $user['lastname'],
+                $user['email'],
+                $user['label_role'] ?? 'student',
+                (int)($user['points'] ?? 0),
+                (int)$user['id']
             );
         } catch(PDOException $e){
             echo "Error:".$e->getMessage();
@@ -43,21 +43,50 @@ class UserRepository
             $sql = "SELECT * FROM users WHERE email = ?";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$email]);
-            $user = $stmt->fetch(PDO::FETCH_OBJ);
+            $user = $stmt->fetch();
             if($user == null){
                 echo "User with this email not found!";
+                return null;
             }
             return new User(
-                $user->firstname,
-                $user->lastname,
-                $user->email,
-                $user->id_role,
-                (int)($user->points ?? 0),
-                $user->id
+                $user['firstname'],
+                $user['lastname'],
+                $user['email'],
+                $user['label_role'] ?? 'student',
+                (int)($user['points'] ?? 0),
+                (int)$user['id']
             );
         } catch(PDOException $e){
                 echo "Error:".$e->getMessage();
                 return null;
             }
         }
+
+public function verifyLogin($email,$password):?User{
+        try{
+            $sql = "SELECT * FROM users WHERE email = ?";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$email]);
+            $userData = $stmt->fetch();
+
+            if(!$userData){
+                return null;
+            }
+
+            if(password_verify($password,$userData['password'])){
+                return new User(
+                    $userData['firstname'],
+                    $userData['lastname'],
+                    $userData['email'],
+                    $userData['label_role'] ?? 'student',
+                    (int)($userData['points'] ?? 0),
+                    (int)$userData['id']
+                );
+            }
+            return null;
+        }catch(PDOException $e){
+            echo "Error: ".$e->getMessage();
+            return null;
+        }
+}
 }
