@@ -33,4 +33,22 @@ class HelpRequestRepository
         }
     }
 
+    public function getActiveRequests():?array{
+        try{
+            $sql = "SELECT hr.*, u.firstname, u.lastname 
+                    FROM help_requests hr
+                    INNER JOIN users u ON hr.id_learner = u.id
+                    WHERE hr.status = 'pending'
+                    ORDER BY hr.created_at DESC";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch(PDOException $e){
+            echo "Error :".$e->getMessage();
+            return null;
+        }
+
+
+    }
+
 }

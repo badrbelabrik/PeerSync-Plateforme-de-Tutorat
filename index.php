@@ -51,6 +51,9 @@ switch ($route) {
         $userRepo = new UserRepository();
         $currentUser = $userRepo->getUserById((int)$_SESSION['user_id']);
 
+        $helpRepo = new \Repositories\HelpRequestRepository();
+        $activeRequests = $helpRepo->getActiveRequests();
+
         if (!$currentUser) {
             session_destroy();
             header('Location: views/student-dashboard.php');

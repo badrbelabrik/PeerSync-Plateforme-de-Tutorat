@@ -133,51 +133,53 @@ if (!isset($currentUser)) {
 
                 <ul class="divide-y divide-slate-200">
 
-                    <li class="p-6 hover:bg-slate-50 transition">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-start space-x-3">
-                                <div class="mt-1 flex-shrink-0 w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></div>
-                                <div>
-                                    <h4 class="text-sm font-semibold text-brand-900 hover:underline cursor-pointer">Problème sur l'Autoloader en PHP OOP</h4>
-                                    <p class="text-sm text-slate-600 mt-1 max-w-2xl">
-                                        Je n'arrive pas à importer mon contrôleur dans mon fichier index.php, j'ai une erreur de classe non trouvée malgré la configuration du namespace...
-                                    </p>
-                                    <div class="mt-2 flex items-center space-x-4 text-xs text-slate-500">
-                                        <span class="font-medium text-slate-700">Par : Thomas Dupuis</span>
-                                        <span>• Instancié il y a 12 min</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <button class="inline-flex items-center px-3 py-1.5 border border-slate-300 text-xs font-semibold rounded-md text-slate-700 bg-white hover:bg-slate-50 shadow-sm transition">
-                                    Voir les détails
-                                </button>
-                            </div>
-                        </div>
-                    </li>
+                    <?php if (empty($activeRequests)): ?>
+                        <li class="p-6 text-center text-sm text-slate-500">
+                            Aucune demande d'aide n'est ouverte pour le moment. Soyez le premier à demander !
+                        </li>
+                    <?php else: ?>
 
-                    <li class="p-6 hover:bg-slate-50 transition">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-start space-x-3">
-                                <div class="mt-1 flex-shrink-0 w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></div>
-                                <div>
-                                    <h4 class="text-sm font-semibold text-brand-900 hover:underline cursor-pointer">Flexbox vs CSS Grid sur Tailwind</h4>
-                                    <p class="text-sm text-slate-600 mt-1 max-w-2xl">
-                                        Besoin d'aide pour réaliser la mise en page responsive d'une barre latérale de tableau de bord. Mon layout s'écrase sur mobile.
-                                    </p>
-                                    <div class="mt-2 flex items-center space-x-4 text-xs text-slate-500">
-                                        <span class="font-medium text-slate-700">Par : Sara El Madi</span>
-                                        <span>• Instancié il y a 1h</span>
+                        <?php foreach ($activeRequests as $request): ?>
+                            <li class="p-6 hover:bg-slate-50 transition">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-start space-x-3">
+                                        <div class="mt-1 flex-shrink-0 w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></div>
+                                        <div>
+                                            <h4 class="text-sm font-semibold text-brand-900 hover:underline cursor-pointer">
+                                                <?= htmlspecialchars($request['title'] ?? $request['subject'] ?? 'Demande d\'aide') ?>
+                                            </h4>
+                                            <p class="text-sm text-slate-600 mt-1 max-w-2xl">
+                                                <?= htmlspecialchars($request['description'] ?? '') ?>
+                                            </p>
+                                            <div class="mt-2 flex items-center space-x-4 text-xs text-slate-500">
+                                <span class="font-medium text-slate-700">
+                                    Par : <?= htmlspecialchars($request['firstname'] . ' ' . $request['lastname']) ?>
+                                </span>
+                                                <span>• Créé le : <?= date('d/m/Y à H:i', strtotime($request['created_at'])) ?></span>
+                                                <?php if (!empty($request['skill_label'])): ?>
+                                                    <span class="inline-flex items-center rounded-md bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-600">
+                                        <?= htmlspecialchars($request['skill_label']) ?>
+                                    </span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <?php if ($currentUser->getRole() === 'tutor' || $currentUser->getRole() === 'admin'): ?>
+                                            <button class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-semibold rounded-md text-white bg-brand-600 hover:bg-brand-700 shadow-sm transition">
+                                                Rejoindre / Aider
+                                            </button>
+                                        <?php else: ?>
+                                            <button class="inline-flex items-center px-3 py-1.5 border border-slate-300 text-xs font-semibold rounded-md text-slate-700 bg-white hover:bg-slate-50 shadow-sm transition">
+                                                Voir les détails
+                                            </button>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
-                            </div>
-                            <div>
-                                <button class="inline-flex items-center px-3 py-1.5 border border-slate-300 text-xs font-semibold rounded-md text-slate-700 bg-white hover:bg-slate-50 shadow-sm transition">
-                                    Voir les détails
-                                </button>
-                            </div>
-                        </div>
-                    </li>
+                            </li>
+                        <?php endforeach; ?>
+
+                    <?php endif; ?>
 
                 </ul>
             </div>
