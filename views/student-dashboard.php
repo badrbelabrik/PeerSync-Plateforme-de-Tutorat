@@ -110,17 +110,7 @@ if (!isset($currentUser)) {
                     </div>
                     <div>
                         <p class="text-sm font-medium text-slate-500 truncate">Votre solde de jetons</p>
-                        <p class="text-2xl font-bold text-slate-900">120 pts</p>
-                    </div>
-                </div>
-
-                <div class="bg-white overflow-hidden shadow-sm border border-slate-200 rounded-xl p-5 flex items-center space-x-4">
-                    <div class="p-3 bg-brand-50 text-brand-600 rounded-lg">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-slate-500 truncate">Statut de compte</p>
-                        <p class="text-2xl font-bold text-slate-900 capitalize"><?= htmlspecialchars($_SESSION['user_role'] ?? 'student') ?></p>
+                        <p class="text-2xl font-bold text-slate-900"><?= $currentUser->getPoints() ." pts" ?></p>
                     </div>
                 </div>
             </div>
