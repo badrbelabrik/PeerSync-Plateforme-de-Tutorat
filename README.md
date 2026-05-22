@@ -68,8 +68,11 @@ Tables de liaison :
 ## 📊 Diagrammes UML
 
 # diagramme de cas d'utilisation
+![use-case-peersync.png](docs/use-case-peersync.png)
 # diagramme de classe
+![class-diagram-peersync.png](docs/class-diagram-peersync.png)
 # diagramme ERD
+![erd-peersync.png](docs/erd-peersync.png)
 
 ## 🧩 Technologies Utilisées
 ## Backend
