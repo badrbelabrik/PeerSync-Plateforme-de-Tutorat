@@ -8,13 +8,15 @@ class HelpRequest
     private string $description;
     private ?string $status;
     private User $learner;
+    private Skill $skill;
     private ?User $tutor;
     private ?string $created_at;
 
-    public function __construct(string $title,string $description,User $learner,?string $status = 'pending',?User $tutor = null,?int $id = null,?string $created_at = null){
+    public function __construct(string $title,string $description,User $learner,Skill $skill,?string $status = 'pending',?User $tutor = null,?int $id = null,?string $created_at = null){
         $this->title = $title;
         $this->description = $description;
         $this->learner = $learner;
+        $this->skill = $skill;
         $this->status = $status;
         $this->tutor = $tutor;
         $this->id = $id;

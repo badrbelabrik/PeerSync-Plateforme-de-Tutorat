@@ -96,7 +96,7 @@ if (!isset($currentUser)) {
                     </p>
                 </div>
                 <div class="mt-4 flex md:mt-0 md:ml-4">
-                    <button class="inline-flex items-center px-4 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 focus:outline-none transition">
+                    <button id="openModalBtn" class="inline-flex items-center px-4 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 focus:outline-none transition">
                         <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                         Créer un ticket d'aide
                     </button>
@@ -235,6 +235,83 @@ if (!isset($currentUser)) {
         </main>
     </div>
 </div>
+<div id="helpModal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div id="modalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
 
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+        <div class="relative inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-slate-200">
+
+            <div class="bg-slate-50/50 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-slate-900" id="modal-title">Créer une demande d'aide</h3>
+                <button id="closeModalBtn" class="text-slate-400 hover:text-slate-500 transition">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <form action="index.php?route=create-ticket" method="POST" class="px-6 py-4 space-y-4">
+
+                <div>
+                    <label for="title" class="block text-sm font-medium text-slate-700 mb-1">Quel est votre problème ? (Titre court)</label>
+                    <input type="text" name="title" id="title" required placeholder="Ex: Erreur Fetch PDO dans mon Repository"
+                           class="w-full rounded-lg border-slate-300 shadow-sm border p-2.5 text-sm focus:border-brand-600 focus:ring focus:ring-brand-600/20 focus:outline-none">
+                </div>
+
+                <div>
+                    <label for="skill" class="block text-sm font-medium text-slate-700 mb-1">Matière / Technologie</label>
+                    <select name="skill" id="skill" class="w-full rounded-lg border-slate-300 shadow-sm border p-2.5 text-sm focus:border-brand-600 focus:ring focus:ring-brand-600/20 focus:outline-none bg-white">
+                        <?php foreach($skills as $skill): ?>
+                        <option value="<?= $skill['name']?>"><?= $skill['name']?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="description" class="block text-sm font-medium text-slate-700 mb-1">Détaillez votre demande</label>
+                    <textarea name="description" id="description" rows="4" required placeholder="Expliquez ce que vous essayez de faire et l'erreur obtenue..."
+                              class="w-full rounded-lg border-slate-300 shadow-sm border p-2.5 text-sm focus:border-brand-600 focus:ring focus:ring-brand-600/20 focus:outline-none"></textarea>
+                </div>
+
+                <div class="pt-4 border-t border-slate-200 flex justify-end space-x-3">
+                    <button type="button" id="cancelModalBtn" class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 transition">
+                        Annuler
+                    </button>
+                    <button type="submit" class="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 shadow-sm transition">
+                        Publier la demande
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
 </body>
+<script>
+    // Récupération des éléments
+    const modal = document.getElementById('helpModal');
+    const openBtn = document.getElementById('openModalBtn');
+    const closeBtn = document.getElementById('closeModalBtn');
+    const cancelBtn = document.getElementById('cancelModalBtn');
+    const overlay = document.getElementById('modalOverlay');
+
+    // Fonction pour ouvrir la modal
+    openBtn.addEventListener('click', () => {
+        modal.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden'); // Empêche de scroller le fond
+    });
+
+    // Fonction pour fermer la modal
+    const closeModal = () => {
+        modal.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+    };
+
+    // Événements de fermeture
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', closeModal); // Ferme si on clique à côté de la modal
+</script>
 </html>

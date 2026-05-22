@@ -52,8 +52,10 @@ switch ($route) {
         $currentUser = $userRepo->getUserById((int)$_SESSION['user_id']);
 
         $helpRepo = new \Repositories\HelpRequestRepository();
+        $skillsRepo = new \Repositories\SkillRepository();
         $activeRequests = $helpRepo->getActiveRequests();
         $resolvedRequests = $helpRepo->getResolvedRequests();
+        $skills = $skillsRepo->getAllSkills();
         if (!$currentUser) {
             session_destroy();
             header('Location: views/student-dashboard.php');
@@ -61,6 +63,10 @@ switch ($route) {
         }
 
         require_once __DIR__ . '/views/student-dashboard.php';
+        break;
+    case 'create-ticket':
+        $helpController = new \Controllers\HelpRequestController();
+        $helpController->create();
         break;
 
     default:

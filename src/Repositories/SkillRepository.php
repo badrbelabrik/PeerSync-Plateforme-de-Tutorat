@@ -34,4 +34,16 @@ class SkillRepository
         }
 
     }
+
+    public function getAllSkills():?array{
+        try{
+            $sql = "SELECT * FROM skills";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }catch(PDOException $e){
+            echo "Error :".$e->getMessage();
+            return null;
+        }
+    }
 }

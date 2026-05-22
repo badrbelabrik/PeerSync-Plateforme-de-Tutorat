@@ -46,8 +46,10 @@ CREATE TABLE help_requests(
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     id_learner INT,
     id_tutor INT,
+    id_skill INT,
     FOREIGN KEY (id_learner) REFERENCES users(id) ON DELETE SET NULL,
-    FOREIGN KEY (id_tutor) REFERENCES users(id) ON DELETE SET NULL
+    FOREIGN KEY (id_tutor) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (id_skill) REFERENCES skills(id) ON DELETE SET NULL
 );
 CREATE TABLE reviews(
     id INT PRIMARY KEY AUTO_INCREMENT,
