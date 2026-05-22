@@ -102,7 +102,7 @@ if (!isset($currentUser)) {
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-5 sm:grid-cols-2 lg:grid-cols-3 mb-8">
+            <div class="grid grid-cols-1 gap-5 lg:grid-cols-2 mb-8">
                 <div class="bg-white overflow-hidden shadow-sm border border-slate-200 rounded-xl p-5 flex items-center space-x-4">
                     <div class="p-3 bg-amber-50 text-amber-600 rounded-lg">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -112,13 +112,36 @@ if (!isset($currentUser)) {
                         <p class="text-2xl font-bold text-slate-900"><?= $currentUser->getPoints() . " pts" ?></p>
                     </div>
                 </div>
-                <div class="bg-white overflow-hidden shadow-sm border border-slate-200 rounded-xl p-5 flex items-center space-x-4">
-                    <div class="p-3 bg-amber-50 text-amber-600 rounded-lg">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+
+                <div class="bg-white overflow-hidden shadow-sm border border-slate-200 rounded-xl p-5 flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-2 bg-brand-50 text-brand-600 rounded-lg">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-sm font-semibold text-slate-900">Vos Spécialités</h3>
+                        </div>
+
+                        <button id="openSkillModalBtn" class="inline-flex items-center px-2.5 py-1.5 border border-slate-300 text-xs font-semibold rounded-md text-brand-700 bg-brand-50 hover:bg-brand-100 transition shadow-sm">
+                            <svg class="w-3.5 h-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                            Ajouter
+                        </button>
                     </div>
-                    <div>
-                        <p class="text-sm font-medium text-slate-500 truncate">Votre solde de points</p>
-                        <p class="text-2xl font-bold text-slate-900"><?= $currentUser->getPoints() . " pts" ?></p>
+
+                    <div class="flex flex-wrap gap-2 overflow-y-auto max-h-[72px] pr-1">
+                        <?php if (empty($userSkills)): ?>
+                            <p class="text-xs text-slate-400 italic py-1">Aucune compétence enregistrée pour le moment.</p>
+                        <?php else: ?>
+                            <?php foreach ($userSkills as $uSkill): ?>
+                                <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 ring-1 ring-inset ring-slate-600/10">
+                        <span class="font-semibold text-brand-900"><?= htmlspecialchars($uSkill['skill_name']) ?></span>
+                        <span class="text-slate-400">|</span>
+                        <span class="text-amber-600 font-medium text-[11px] uppercase tracking-wide"><?= htmlspecialchars($uSkill['skill_level']) ?></span>
+                    </span>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

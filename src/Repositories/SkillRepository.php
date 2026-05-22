@@ -54,7 +54,7 @@ class SkillRepository
         }
     }
 
-    public function getAllSkills():?array{
+    public function getAllSkills():array{
         try{
             $sql = "SELECT * FROM skills";
             $stmt = $this->pdo->prepare($sql);
@@ -62,7 +62,22 @@ class SkillRepository
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }catch(PDOException $e){
             echo "Error :".$e->getMessage();
-            return null;
+            return [];
         }
     }
+
+    public function getSkillsByUserId($userId):array{
+        try{
+            $sql = "SELECT u.firstname,u.lastname,s.name AS skill_name,us.level AS skill_level FROM users u
+                    JOIN user_skills us ON us.id_user = u.id
+                    JOIN skills s ON s.id = us.id_skill
+                    WHERE u.id = ?";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$userId]);
+            return $result = $stmt->fetchAll(PDO::FETCH_ASSOC)?: [];
+        }catch(PDOException $e){
+            echo "Error :".$e->getMessage();
+            return [];
+        }
+}
 }

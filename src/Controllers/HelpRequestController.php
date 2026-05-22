@@ -107,9 +107,9 @@ class HelpRequestController
                 $_SESSION['error_message'] = $e->getMessage();
             }
         }
+        header('Location: index.php?route=dashboard');
+        exit();
     }
-
-    // Dans src/Controllers/HelpRequestController.php
 
     public function myRequests(): void
     {
@@ -128,7 +128,8 @@ class HelpRequestController
         $currentUser = $this->userRepo->getUserById($userId);
 
         $myRequests = $this->helpRepo->getRequestsByUserId($userId);
-
+        $skillsRepo = new \Repositories\SkillRepository();
+        $userSkills = $skillsRepo->getSkillsByUserId($userId);
         require_once __DIR__ . '/../../views/my-requests.php';
     }
 }

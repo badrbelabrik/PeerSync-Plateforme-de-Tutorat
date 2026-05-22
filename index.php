@@ -48,13 +48,14 @@ switch ($route) {
             exit();
         }
 
-        // On récupère l'user ici pour la vue
+
         $userRepo = new UserRepository();
 
-        $currentUser = $userRepo->getUserById((int)$_SESSION['user_id']);
 
         $helpRepo = new \Repositories\HelpRequestRepository();
         $skillsRepo = new \Repositories\SkillRepository();
+        $currentUser = $userRepo->getUserById((int)$_SESSION['user_id']);
+        $userSkills = $skillsRepo->getSkillsByUserId($_SESSION['user_id']);
         $activeRequests = $helpRepo->getActiveRequests();
         $resolvedRequests = $helpRepo->getResolvedRequests();
         $skills = $skillsRepo->getAllSkills();
@@ -76,6 +77,8 @@ switch ($route) {
         break;
 
     case 'my-requests':
+        $skillsRepo = new \Repositories\SkillRepository();
+        $userSkills = $skillsRepo->getSkillsByUserId($_SESSION['user_id']);
         $helpController = new \Controllers\HelpRequestController();
         $helpController->myRequests();
         break;

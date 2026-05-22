@@ -36,7 +36,7 @@ class HelpRequestRepository
         }
     }
 
-    public function getResolvedRequests():?array{
+    public function getResolvedRequests():array{
         try{
             $sql = "SELECT hr.*, u.firstname, u.lastname 
                     FROM help_requests hr
@@ -48,10 +48,10 @@ class HelpRequestRepository
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }catch(PDOException $e){
             echo "Error :".$e->getMessage();
-            return null;
+            return [];
         }
     }
-    public function getActiveRequests():?array{
+    public function getActiveRequests():array{
         try{
             $sql = "SELECT hr.*, u.firstname, u.lastname 
                     FROM help_requests hr
@@ -63,7 +63,7 @@ class HelpRequestRepository
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch(PDOException $e){
             echo "Error :".$e->getMessage();
-            return null;
+            return [];
         }
     }
 
@@ -113,13 +113,13 @@ class HelpRequestRepository
             $skill = new \Entities\Skill($row['skill_label'] ?? '');
 
             return $helpRequest = new \Entities\HelpRequest(
-                $row['title'],                          // 1. $title
-                $row['description'],                    // 2. $description
-                $student,                               // 3. $learner
-                $skill,                                 // 4. $skill
-                $row['status'] ?? 'pending',            // 5. $status (Reçoit la string 'pending' ou 'assigned')
-                null,                                   // 6. $tutor (Vaut null pour le moment)
-                (int)$row['id']                         // 7. $id (L'ID vient après)
+                $row['title'],
+                $row['description'],
+                $student,
+                $skill,
+                $row['status'] ?? 'pending',
+                null,
+                (int)$row['id']
             );
 
 
@@ -131,9 +131,9 @@ class HelpRequestRepository
 
     public function markAsResolved(HelpRequest $helpReq){
         try{
-            $sql = "UPDATE help_requests SET status = 'resolved', id_tutor = ? WHERE id = ?";
+            $sql = "UPDATE help_requests SET status = 'resolved' WHERE id = ?";
             $stmt = $this->pdo->prepare($sql);
-            $stmt->execute($helpReq->getId());
+            $stmt->execute([$helpReq->getId()]);
         }catch(PDOException $e){
             echo "Error :".$e->getMessage();
         }
@@ -154,7 +154,7 @@ class HelpRequestRepository
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([':user_id' => $userId]);
 
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
             echo "Error : " . $e->getMessage();
             return [];
