@@ -53,7 +53,7 @@ switch ($route) {
 
         $helpRepo = new \Repositories\HelpRequestRepository();
         $activeRequests = $helpRepo->getActiveRequests();
-
+        $resolvedRequests = $helpRepo->getResolvedRequests();
         if (!$currentUser) {
             session_destroy();
             header('Location: views/student-dashboard.php');

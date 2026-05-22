@@ -34,6 +34,8 @@ class AuthController
 
                 $_SESSION['user_id'] = $user->getId();
                 $_SESSION['user_firstname'] = $user->getFirstname();
+                $_SESSION['user_lastname'] = $user->getLastname();
+                $_SESSION['user_points'] = $user->getPoints();
                 $_SESSION['user_role'] = $user->getRole();
 
                 header('Location: index.php?route=dashboard');

@@ -25,17 +25,9 @@ try {
     // 2. Définition des utilisateurs à créer
     $usersToInsert = [
         [
-            'firstname'  => 'badr',
-            'lastname'   => 'belabrik',
-            'email'      => 'badr.belabrik@gmail.com',
-            'password'   => password_hash('realmadrid123', PASSWORD_BCRYPT), // HACHAGE ICI !
-            'id_role' => 1,
-            'points'     => 0
-        ],
-        [
-            'firstname'  => 'yahya',
-            'lastname'   => 'bahou',
-            'email'      => 'john.tuteur@etudiant.com',
+            'firstname'  => 'hassan',
+            'lastname'   => 'ali',
+            'email'      => 'hassan@gmail.com',
             'password'   => password_hash('realmadrid123', PASSWORD_BCRYPT),
             'id_role' => 2,
             'points'     => 0

@@ -103,19 +103,19 @@ if (!isset($currentUser)) {
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 mb-8">
+            <div class="grid grid-cols-2 gap-5 sm:grid-cols-2 lg:grid-cols-3 mb-8">
                 <div class="bg-white overflow-hidden shadow-sm border border-slate-200 rounded-xl p-5 flex items-center space-x-4">
                     <div class="p-3 bg-amber-50 text-amber-600 rounded-lg">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
                     <div>
-                        <p class="text-sm font-medium text-slate-500 truncate">Votre solde de jetons</p>
+                        <p class="text-sm font-medium text-slate-500 truncate">Votre solde de points</p>
                         <p class="text-2xl font-bold text-slate-900"><?= $currentUser->getPoints() ." pts" ?></p>
                     </div>
                 </div>
             </div>
-
-            <div class="bg-white shadow-sm border border-slate-200 rounded-xl overflow-hidden">
+<!--        display active help requests-->
+            <div class="bg-white shadow-sm border border-slate-200 rounded-xl overflow-hidden mb-8">
                 <div class="px-6 py-5 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
                     <h3 class="text-base font-semibold leading-6 text-slate-900">Demandes d'aide récentes</h3>
                     <span class="inline-flex items-center rounded-md bg-brand-50 px-2 py-1 text-xs font-medium text-brand-700 ring-1 ring-inset ring-brand-700/10">Ouvertes</span>
@@ -130,6 +130,64 @@ if (!isset($currentUser)) {
                     <?php else: ?>
 
                         <?php foreach ($activeRequests as $request): ?>
+                            <li class="p-6 hover:bg-slate-50 transition">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-start space-x-3">
+                                        <div class="mt-1 flex-shrink-0 w-2.5 h-2.5 rounded-full bg-orange-500 animate-pulse"></div>
+                                        <div>
+                                            <h4 class="text-sm font-semibold text-brand-900 hover:underline cursor-pointer">
+                                                <?= htmlspecialchars($request['title'] ?? $request['subject'] ?? 'Demande d\'aide') ?>
+                                            </h4>
+                                            <p class="text-sm text-slate-600 mt-1 max-w-2xl">
+                                                <?= htmlspecialchars($request['description'] ?? '') ?>
+                                            </p>
+                                            <div class="mt-2 flex items-center space-x-4 text-xs text-slate-500">
+                                <span class="font-medium text-slate-700">
+                                    Par : <?= htmlspecialchars($request['firstname'] . ' ' . $request['lastname']) ?>
+                                </span>
+                                                <span>• Créé le : <?= date('d/m/Y à H:i', strtotime($request['created_at'])) ?></span>
+                                                <?php if (!empty($request['skill_label'])): ?>
+                                                    <span class="inline-flex items-center rounded-md bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-600">
+                                        <?= htmlspecialchars($request['skill_label']) ?>
+                                    </span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <?php if ($currentUser->getRole() === 'tutor' || $currentUser->getRole() === 'admin'): ?>
+                                            <button class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-semibold rounded-md text-white bg-brand-600 hover:bg-brand-700 shadow-sm transition">
+                                                Rejoindre / Aider
+                                            </button>
+                                        <?php else: ?>
+                                            <button class="inline-flex items-center px-3 py-1.5 border border-slate-300 text-xs font-semibold rounded-md text-slate-700 bg-white hover:bg-slate-50 shadow-sm transition">
+                                                Voir les détails
+                                            </button>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </li>
+                        <?php endforeach; ?>
+
+                    <?php endif; ?>
+
+                </ul>
+            </div>
+<!--        Display resolved help requests-->
+            <div class="bg-white shadow-sm border border-slate-200 rounded-xl overflow-hidden">
+                <div class="px-6 py-5 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
+                    <h3 class="text-base font-semibold leading-6 text-slate-900">Demandes d'aide resolue</h3>
+                </div>
+
+                <ul class="divide-y divide-slate-200">
+
+                    <?php if (empty($resolvedRequests)): ?>
+                        <li class="p-6 text-center text-sm text-slate-500">
+                            Aucune demande d'aide n'est publier pour le moment. Soyez le premier à demander !
+                        </li>
+                    <?php else: ?>
+
+                        <?php foreach ($resolvedRequests as $request): ?>
                             <li class="p-6 hover:bg-slate-50 transition">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-start space-x-3">
