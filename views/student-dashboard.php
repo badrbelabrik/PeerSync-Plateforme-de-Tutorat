@@ -152,12 +152,16 @@ if (!isset($currentUser)) {
                                     Par : <?= htmlspecialchars($request['firstname'] . ' ' . $request['lastname']) ?>
                                 </span>
                                                 <span>• Créé le : <?= date('d/m/Y à H:i', strtotime($request['created_at'])) ?></span>
-                                                <?php if (!empty($request['skill_label'])): ?>
-                                                    <span class="inline-flex items-center rounded-md bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-600">
-                                        <?= htmlspecialchars($request['skill_label']) ?>
-                                    </span>
-                                                <?php endif; ?>
+
                                             </div>
+                                            <?php
+                                            $skillName = $skillsRepo->findSkillById($request['id_skill'])->getName();
+                                            if (!empty($skillName)):
+                                                ?>
+                                                <span class="inline-flex items-center rounded-md bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700 ring-1 ring-inset ring-brand-700/10">
+                                <?= htmlspecialchars($skillName) ?>
+                            </span>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <div>
@@ -211,6 +215,14 @@ if (!isset($currentUser)) {
                                     </span>
                                                 <?php endif; ?>
                                             </div>
+                                            <?php
+                                            $skillName = $skillsRepo->findSkillById($request['id_skill'])->getName();
+                                            if (!empty($skillName)):
+                                                ?>
+                                                <span class="inline-flex items-center rounded-md bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700 ring-1 ring-inset ring-brand-700/10">
+                                <?= htmlspecialchars($skillName) ?>
+                            </span>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <div>

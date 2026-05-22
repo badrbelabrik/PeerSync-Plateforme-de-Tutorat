@@ -35,6 +35,25 @@ class SkillRepository
 
     }
 
+    public function findSkillById($id){
+        try{
+            $sql = "SELECT * FROM skills WHERE id = ?";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$id]);
+            $result = $stmt->fetch(PDO::FETCH_OBJ);
+            if(!$result){
+                return null;
+            }
+            return new Skill(
+                $result->name,
+                $result->id
+            );
+        } catch(PDOException $e){
+            echo "Error:".$e->getMessage();
+            return null;
+        }
+    }
+
     public function getAllSkills():?array{
         try{
             $sql = "SELECT * FROM skills";

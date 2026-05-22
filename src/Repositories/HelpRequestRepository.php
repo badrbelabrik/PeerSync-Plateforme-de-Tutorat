@@ -17,12 +17,13 @@ class HelpRequestRepository
 
     public function create(HelpRequest $helpReq):bool{
         try{
-            $sql = "INSERT INTO help_requests(title,description,id_learner) VALUES(?,?,?)";
+            $sql = "INSERT INTO help_requests(title,description,id_learner,id_skill) VALUES(?,?,?,?)";
             $stmt = $this->pdo->prepare($sql);
              $success = $stmt->execute([
                 $helpReq->getTitle(),
                 $helpReq->getDescription(),
-                $helpReq->getLearner()->getId()
+                $helpReq->getLearner()->getId(),
+                 $helpReq->getSkill()->getId()
             ]);
              if($success){
                  $helpReq->setId((int)$this->pdo->lastInsertId());

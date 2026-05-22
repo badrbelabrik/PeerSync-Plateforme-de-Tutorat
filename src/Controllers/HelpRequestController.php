@@ -6,17 +6,20 @@ use Entities\HelpRequest;
 use Entities\Skill;
 use Exception;
 use Repositories\HelpRequestRepository;
+use Repositories\SkillRepository;
 use Repositories\UserRepository;
 
 class HelpRequestController
 {
     private HelpRequestRepository $helpRepo;
     private UserRepository $userRepo;
+    private SkillRepository $skillRepo;
 
     public function __construct()
     {
         $this->helpRepo = new HelpRequestRepository();
         $this->userRepo = new UserRepository();
+        $this->skillRepo = new SkillRepository();
     }
 
     public function create(): void
@@ -40,7 +43,7 @@ class HelpRequestController
             exit();
         }
         $newLearner = $this->userRepo->getUserById($learnerId);
-        $newSkill = new Skill($skill);
+        $newSkill = $this->skillRepo->findSkillByName($skill);
         $newHelp = new HelpRequest($title,$description,$newLearner,$newSkill);
         $success = $this->helpRepo->create($newHelp);
         header('Location: index.php?route=dashboard');
@@ -67,8 +70,6 @@ class HelpRequestController
 
                 $helpRequest = $this->helpRepo->getHelpById($ticketId);
 
-                var_dump($helpRequest->getId(), $helpRequest->getStatus());
-                die();
                 if ($helpRequest && $tutor) {
                     $helpRequest->assignTo($tutor);
 

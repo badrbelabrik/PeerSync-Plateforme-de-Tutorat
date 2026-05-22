@@ -16,6 +16,7 @@ spl_autoload_register(function ($class) {
 
 use Controllers\AuthController;
 use Repositories\UserRepository;
+use Repositories\SkillRepository;
 
 $route = $_GET['route'] ?? 'login';
 
@@ -49,6 +50,7 @@ switch ($route) {
 
         // On récupère l'user ici pour la vue
         $userRepo = new UserRepository();
+
         $currentUser = $userRepo->getUserById((int)$_SESSION['user_id']);
 
         $helpRepo = new \Repositories\HelpRequestRepository();
