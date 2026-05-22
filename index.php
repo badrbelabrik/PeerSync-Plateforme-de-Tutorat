@@ -68,6 +68,10 @@ switch ($route) {
         $helpController = new \Controllers\HelpRequestController();
         $helpController->create();
         break;
+    case 'accept-ticket':
+        $helpController = new \Controllers\HelpRequestController();
+        $helpController->accept();
+        break;
 
     default:
         http_response_code(404);

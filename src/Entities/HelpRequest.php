@@ -1,6 +1,8 @@
 <?php
 
 namespace Entities;
+use Exception;
+
 class HelpRequest
 {
     private ?int $id;
@@ -21,6 +23,14 @@ class HelpRequest
         $this->tutor = $tutor;
         $this->id = $id;
         $this->created_at = $created_at;
+    }
+
+    public function assignTo(User $tutor):void{
+        if($tutor->getId() === $this->learner->getId()){
+            throw new Exception("Erreur : Vous ne pouvez pas accepter votre propre demande d'aide.");
+        }
+        $this->tutor = $tutor;
+        $this->status = 'assigned';
     }
 
     public function getId(): ?int
@@ -46,6 +56,16 @@ class HelpRequest
     public function getDescription(): string
     {
         return $this->description;
+    }
+
+    public function getSkill(): Skill
+    {
+        return $this->skill;
+    }
+
+    public function setSkill(Skill $skill): void
+    {
+        $this->skill = $skill;
     }
 
     public function setDescription(string $description): void

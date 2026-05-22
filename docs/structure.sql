@@ -42,7 +42,7 @@ CREATE TABLE help_requests(
     id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(100) NOT NULL,
     description TEXT NOT NULL,
-    status ENUM('pending','resolved') NOT NULL DEFAULT 'pending',
+    status ENUM('pending','assigned','resolved') NOT NULL DEFAULT 'pending',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     id_learner INT,
     id_tutor INT,

@@ -2,6 +2,8 @@
 
 namespace Repositories;
 use Entities\HelpRequest;
+use Entities\Skill;
+use Entities\User;
 use PDO;
 use PDOException;
 use Config\Database;
@@ -53,13 +55,75 @@ class HelpRequestRepository
             $sql = "SELECT hr.*, u.firstname, u.lastname 
                     FROM help_requests hr
                     INNER JOIN users u ON hr.id_learner = u.id
-                    WHERE hr.status = 'pending'
+                    WHERE hr.status = 'pending' OR hr.status = 'assigned'
                     ORDER BY hr.created_at DESC";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch(PDOException $e){
             echo "Error :".$e->getMessage();
+            return null;
+        }
+    }
+
+    public function updateAssignment(HelpRequest $helpReq):void{
+        try{
+            $sql = "UPDATE help_requests SET status = ?, id_tutor = ? WHERE id = ?";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([
+                $helpReq->getStatus(),
+                $helpReq->getTutor()->getId(),
+                $helpReq->getId()
+            ]);
+        } catch(PDOException $e){
+            echo "Error :".$e->getMessage();
+        }
+    }
+
+    public function getHelpById(int $id): ?HelpRequest
+    {
+        try {
+            $sql = "SELECT hr.*, 
+                       u.id AS user_id, 
+                       u.firstname AS user_firstname, 
+                       u.lastname AS user_lastname,
+                       u.id_role AS user_role
+                FROM help_requests hr
+                INNER JOIN users u ON hr.id_learner = u.id
+                WHERE hr.id = ?";
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$id]);
+
+            $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+            if (!$row) {
+                return null;
+            }
+            $student = new \Entities\User(
+                $row['user_firstname'] ?? '',
+                $row['user_lastname'] ?? '',
+                $row['email'] ?? '',
+                $row['user_id_role'] ?? 'student',
+                (int)($row['points'] ?? 0),
+                (int)$row['user_id']
+            );
+
+            $skill = new \Entities\Skill($row['skill_label'] ?? '');
+
+            return $helpRequest = new \Entities\HelpRequest(
+                $row['title'],                          // 1. $title
+                $row['description'],                    // 2. $description
+                $student,                               // 3. $learner
+                $skill,                                 // 4. $skill
+                $row['status'] ?? 'pending',            // 5. $status (Reçoit la string 'pending' ou 'assigned')
+                null,                                   // 6. $tutor (Vaut null pour le moment)
+                (int)$row['id']                         // 7. $id (L'ID vient après)
+            );
+
+
+        } catch (PDOException $e) {
+            echo "Error : " . $e->getMessage();
             return null;
         }
     }

@@ -133,7 +133,13 @@ if (!isset($currentUser)) {
                             <li class="p-6 hover:bg-slate-50 transition">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-start space-x-3">
-                                        <div class="mt-1 flex-shrink-0 w-2.5 h-2.5 rounded-full bg-orange-500 animate-pulse"></div>
+                                        <?php
+                                        $statusColor = 'bg-yellow-500';
+                                        if (($request['status'] ?? '') === 'assigned') {
+                                            $statusColor = 'bg-blue-500';
+                                        }
+                                        ?>
+                                        <div class="mt-1 flex-shrink-0 w-2.5 h-2.5 rounded-full <?= $statusColor ?>"></div>
                                         <div>
                                             <h4 class="text-sm font-semibold text-brand-900 hover:underline cursor-pointer">
                                                 <?= htmlspecialchars($request['title'] ?? $request['subject'] ?? 'Demande d\'aide') ?>
@@ -155,15 +161,10 @@ if (!isset($currentUser)) {
                                         </div>
                                     </div>
                                     <div>
-                                        <?php if ($currentUser->getRole() === 'tutor' || $currentUser->getRole() === 'admin'): ?>
-                                            <button class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-semibold rounded-md text-white bg-brand-600 hover:bg-brand-700 shadow-sm transition">
-                                                Rejoindre / Aider
-                                            </button>
-                                        <?php else: ?>
-                                            <button class="inline-flex items-center px-3 py-1.5 border border-slate-300 text-xs font-semibold rounded-md text-slate-700 bg-white hover:bg-slate-50 shadow-sm transition">
-                                                Voir les détails
-                                            </button>
-                                        <?php endif; ?>
+                                            <a href="index.php?route=accept-ticket&id=<?= $request['id'] ?>"
+                                               class="inline-flex items-center px-3 py-1.5 border border-slate-300 text-xs font-semibold rounded-md text-slate-700 bg-white hover:bg-slate-50 shadow-sm transition">
+                                                Aider
+                                            </a>
                                     </div>
                                 </div>
                             </li>
