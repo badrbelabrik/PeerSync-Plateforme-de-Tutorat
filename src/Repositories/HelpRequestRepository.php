@@ -129,4 +129,36 @@ class HelpRequestRepository
         }
     }
 
+    public function markAsResolved(HelpRequest $helpReq){
+        try{
+            $sql = "UPDATE help_requests SET status = 'resolved', id_tutor = ? WHERE id = ?";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute($helpReq->getId());
+        }catch(PDOException $e){
+            echo "Error :".$e->getMessage();
+        }
+    }
+
+    public function getRequestsByUserId(int $userId): array
+    {
+        try {
+            $sql = "SELECT hr.*, 
+                       u.firstname, u.lastname,
+                       t.firstname AS tutor_firstname, t.lastname AS tutor_lastname
+                FROM help_requests hr
+                INNER JOIN users u ON hr.id_learner = u.id
+                LEFT JOIN users t ON hr.id_tutor = t.id
+                WHERE hr.id_learner = :user_id OR hr.id_tutor = :user_id
+                ORDER BY hr.created_at DESC";
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([':user_id' => $userId]);
+
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            echo "Error : " . $e->getMessage();
+            return [];
+        }
+    }
+
 }

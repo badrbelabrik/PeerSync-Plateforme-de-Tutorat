@@ -75,6 +75,16 @@ switch ($route) {
         $helpController->accept();
         break;
 
+    case 'my-requests':
+        $helpController = new \Controllers\HelpRequestController();
+        $helpController->myRequests();
+        break;
+
+    case 'resolve-ticket':
+        $helpController = new \Controllers\HelpRequestController();
+        $helpController->resolve();
+        break;
+
     default:
         http_response_code(404);
         echo "<h1>Page 404 non trouvée</h1>";

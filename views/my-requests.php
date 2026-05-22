@@ -1,14 +1,16 @@
 <?php
+// 1. On démarre la session si ce n'est pas fait
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-
+// 2. Si l'utilisateur n'est même pas connecté en session -> Login
 if (!isset($_SESSION['user_id'])) {
     header('Location: ../index.php?route=login');
     exit();
 }
 
+// 3. S'il est connecté en session, mais que $currentUser n'existe pas -> Routeur
 if (!isset($currentUser)) {
     header('Location: ../index.php?route=dashboard');
     exit();
@@ -20,7 +22,7 @@ if (!isset($currentUser)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Étudiant - PeerSync</title>
+    <title>Mes Demandes - PeerSync</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -50,11 +52,11 @@ if (!isset($currentUser)) {
             </div>
 
             <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-                <a href="#" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg bg-brand-600 text-white transition">
+                <a href="index.php?route=dashboard" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg text-brand-100 hover:bg-brand-800 hover:text-white transition">
                     <svg class="w-5 h-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                     Tableau de bord
                 </a>
-                <a href="index.php?route=my-requests" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg text-brand-100 hover:bg-brand-800 hover:text-white transition">
+                <a href="index.php?route=my-requests" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-lg bg-brand-600 text-white transition">
                     <svg class="w-5 h-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                     Mes Demandes
                 </a>
@@ -86,10 +88,10 @@ if (!isset($currentUser)) {
             <div class="md:flex md:items-center md:justify-between mb-8">
                 <div class="flex-1 min-w-0">
                     <h1 class="text-2xl font-bold leading-7 text-slate-900 sm:text-3xl sm:truncate">
-                        Ravi de vous revoir, <?= htmlspecialchars($_SESSION['user_firstname'] ?? 'Étudiant') ?> ! 👋
+                        Mes Sessions d'Entraide 📑
                     </h1>
                     <p class="mt-1 text-sm text-slate-500">
-                        Trouvez de l'aide auprès de vos pairs ou proposez vos compétences aujourd'hui.
+                        Suivez l'état d'avancement de vos demandes créées ou acceptées.
                     </p>
                 </div>
                 <div class="mt-4 flex md:mt-0 md:ml-4">
@@ -107,145 +109,78 @@ if (!isset($currentUser)) {
                     </div>
                     <div>
                         <p class="text-sm font-medium text-slate-500 truncate">Votre solde de points</p>
-                        <p class="text-2xl font-bold text-slate-900"><?= $currentUser->getPoints() ." pts" ?></p>
+                        <p class="text-2xl font-bold text-slate-900"><?= $currentUser->getPoints() . " pts" ?></p>
+                    </div>
+                </div>
+                <div class="bg-white overflow-hidden shadow-sm border border-slate-200 rounded-xl p-5 flex items-center space-x-4">
+                    <div class="p-3 bg-amber-50 text-amber-600 rounded-lg">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-slate-500 truncate">Votre solde de points</p>
+                        <p class="text-2xl font-bold text-slate-900"><?= $currentUser->getPoints() . " pts" ?></p>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white shadow-sm border border-slate-200 rounded-xl overflow-hidden mb-8">
+
+            <div class="bg-white shadow-sm border border-slate-200 rounded-xl overflow-hidden">
                 <div class="px-6 py-5 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
-                    <h3 class="text-base font-semibold leading-6 text-slate-900">Demandes d'aide récentes</h3>
-                    <span class="inline-flex items-center rounded-md bg-brand-50 px-2 py-1 text-xs font-medium text-brand-700 ring-1 ring-inset ring-brand-700/10">Ouvertes</span>
+                    <h3 class="text-base font-semibold leading-6 text-slate-900">Suivi de vos demandes</h3>
+                    <span class="inline-flex items-center rounded-md bg-brand-50 px-2 py-1 text-xs font-medium text-brand-700 ring-1 ring-inset ring-brand-700/10">Historique complet</span>
                 </div>
 
                 <ul class="divide-y divide-slate-200">
-
-                    <?php if (empty($activeRequests)): ?>
+                    <?php if (empty($myRequests)): ?>
                         <li class="p-6 text-center text-sm text-slate-500">
-                            Aucune demande d'aide n'est ouverte pour le moment. Soyez le premier à demander !
+                            Vous n'avez aucune demande d'aide active ou assignée pour le moment.
                         </li>
                     <?php else: ?>
-
-                        <?php foreach ($activeRequests as $request): ?>
+                        <?php foreach ($myRequests as $request): ?>
                             <li class="p-6 hover:bg-slate-50 transition">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-start space-x-3">
                                         <?php
                                         $statusColor = 'bg-yellow-500';
-                                        if (($request['status'] ?? '') === 'assigned') {
-                                            $statusColor = 'bg-blue-500';
-                                        }
+                                        if (($request['status'] ?? '') === 'assigned') $statusColor = 'bg-blue-500 animate-pulse';
+                                        if (($request['status'] ?? '') === 'resolved') $statusColor = 'bg-green-500';
                                         ?>
                                         <div class="mt-1 flex-shrink-0 w-2.5 h-2.5 rounded-full <?= $statusColor ?>"></div>
+
                                         <div>
-                                            <div class="flex items-center gap-2">
-                                                <h4 class="text-sm font-semibold text-brand-900 hover:underline cursor-pointer">
-                                                    <?= htmlspecialchars($request['title'] ?? $request['subject'] ?? 'Demande d\'aide') ?>
-                                                </h4>
-                                                <?php
-                                                $skillName = $skillsRepo->findSkillById($request['id_skill'])->getName();
-                                                if (!empty($skillName)):
-                                                    ?>
-                                                    <span class="inline-flex items-center rounded-md bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700 ring-1 ring-inset ring-brand-700/10">
-                                                        <?= htmlspecialchars($skillName) ?>
-                                                    </span>
-                                                <?php endif; ?>
-                                            </div>
+                                            <h4 class="text-sm font-semibold text-brand-900">
+                                                <?= htmlspecialchars($request['title'] ?? 'Demande d\'aide') ?>
+                                            </h4>
                                             <p class="text-sm text-slate-600 mt-1 max-w-2xl">
                                                 <?= htmlspecialchars($request['description'] ?? '') ?>
                                             </p>
                                             <div class="mt-2 flex items-center space-x-4 text-xs text-slate-500">
-                                                <span class="font-medium text-slate-700">
-                                                    Par : <?= htmlspecialchars($request['firstname'] . ' ' . $request['lastname']) ?>
-                                                </span>
+                                                <span>Auteur : <?= htmlspecialchars(($request['firstname'] ?? '') . ' ' . ($request['lastname'] ?? '')) ?></span>
+                                                <?php if (!empty($request['tutor_firstname'])): ?>
+                                                    <span class="text-brand-600 font-medium">• Tuteur : <?= htmlspecialchars($request['tutor_firstname'] . ' ' . $request['tutor_lastname']) ?></span>
+                                                <?php endif; ?>
                                                 <span>• Créé le : <?= date('d/m/Y à H:i', strtotime($request['created_at'])) ?></span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div>
-                                        <?php
-                                        // 🌟 CORRECTION : Logique conditionnelle pour les actions du ticket active
-                                        $isAuthor = (int)($request['id_student'] ?? $request['id_learner'] ?? 0) === (int)$_SESSION['user_id'];
-                                        $status = $request['status'] ?? 'pending';
 
-                                        if ($status === 'assigned'): ?>
-                                            <span class="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-md text-blue-700 bg-blue-50 border border-blue-200 shadow-sm">
-                                                Assigné
-                                            </span>
-                                        <?php elseif ($status === 'pending' && !$isAuthor): ?>
-                                            <a href="index.php?route=accept-ticket&id=<?= $request['id'] ?>"
-                                               class="inline-flex items-center px-3 py-1.5 border border-slate-300 text-xs font-semibold rounded-md text-slate-700 bg-white hover:bg-slate-50 shadow-sm transition">
-                                                Aider
+                                    <div>
+                                        <?php if (($request['status'] ?? '') === 'assigned'): ?>
+                                            <a href="index.php?route=resolve-ticket&id=<?= $request['id'] ?>"
+                                               class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-semibold rounded-md text-white bg-green-600 hover:bg-green-700 shadow-sm transition">
+                                                Marquer comme résolu
                                             </a>
                                         <?php else: ?>
-                                            <button class="inline-flex items-center px-3 py-1.5 border border-slate-300 text-xs font-semibold rounded-md text-slate-400 bg-slate-50 cursor-not-allowed shadow-sm">
-                                                Votre demande
-                                            </button>
+                                            <span class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium capitalize
+                                                <?= ($request['status'] ?? '') === 'resolved' ? 'bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20' : 'bg-yellow-50 text-yellow-800 ring-1 ring-inset ring-yellow-600/20' ?>">
+                                                <?= htmlspecialchars($request['status'] ?? 'pending') ?>
+                                            </span>
                                         <?php endif; ?>
                                     </div>
                                 </div>
                             </li>
                         <?php endforeach; ?>
-
                     <?php endif; ?>
-
-                </ul>
-            </div>
-
-            <div class="bg-white shadow-sm border border-slate-200 rounded-xl overflow-hidden">
-                <div class="px-6 py-5 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
-                    <h3 class="text-base font-semibold leading-6 text-slate-900">Demandes d'aide résolues</h3>
-                </div>
-
-                <ul class="divide-y divide-slate-200">
-
-                    <?php if (empty($resolvedRequests)): ?>
-                        <li class="p-6 text-center text-sm text-slate-500">
-                            Aucune demande d'aide n'est publiée pour le moment. Soyez le premier à demander !
-                        </li>
-                    <?php else: ?>
-
-                        <?php foreach ($resolvedRequests as $request): ?>
-                            <li class="p-6 hover:bg-slate-50 transition">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-start space-x-3">
-                                        <div class="mt-1 flex-shrink-0 w-2.5 h-2.5 rounded-full bg-green-500"></div>
-                                        <div>
-                                            <div class="flex items-center gap-2">
-                                                <h4 class="text-sm font-semibold text-brand-900 hover:underline cursor-pointer">
-                                                    <?= htmlspecialchars($request['title'] ?? $request['subject'] ?? 'Demande d\'aide') ?>
-                                                </h4>
-                                                <?php
-                                                $skillName = $skillsRepo->findSkillById($request['id_skill'])->getName();
-                                                if (!empty($skillName)):
-                                                    ?>
-                                                    <span class="inline-flex items-center rounded-md bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700 ring-1 ring-inset ring-brand-700/10">
-                                                        <?= htmlspecialchars($skillName) ?>
-                                                    </span>
-                                                <?php endif; ?>
-                                            </div>
-                                            <p class="text-sm text-slate-600 mt-1 max-w-2xl">
-                                                <?= htmlspecialchars($request['description'] ?? '') ?>
-                                            </p>
-                                            <div class="mt-2 flex items-center space-x-4 text-xs text-slate-500">
-                                                <span class="font-medium text-slate-700">
-                                                    Par : <?= htmlspecialchars($request['firstname'] . ' ' . $request['lastname']) ?>
-                                                </span>
-                                                <span>• Créé le : <?= date('d/m/Y à H:i', strtotime($request['created_at'])) ?></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <span class="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-md text-green-700 bg-green-50 border border-green-200 shadow-sm">
-                                            Résolu
-                                        </span>
-                                    </div>
-                                </div>
-                            </li>
-                        <?php endforeach; ?>
-
-                    <?php endif; ?>
-
                 </ul>
             </div>
 
@@ -256,11 +191,8 @@ if (!isset($currentUser)) {
 <div id="helpModal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div id="modalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
-
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
         <div class="relative inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-slate-200">
-
             <div class="bg-slate-50/50 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
                 <h3 class="text-lg font-semibold text-slate-900" id="modal-title">Créer une demande d'aide</h3>
                 <button id="closeModalBtn" class="text-slate-400 hover:text-slate-500 transition">
@@ -269,30 +201,27 @@ if (!isset($currentUser)) {
                     </svg>
                 </button>
             </div>
-
             <form action="index.php?route=create-ticket" method="POST" class="px-6 py-4 space-y-4">
-
                 <div>
                     <label for="title" class="block text-sm font-medium text-slate-700 mb-1">Quel est votre problème ? (Titre court)</label>
                     <input type="text" name="title" id="title" required placeholder="Ex: Erreur Fetch PDO dans mon Repository"
                            class="w-full rounded-lg border-slate-300 shadow-sm border p-2.5 text-sm focus:border-brand-600 focus:ring focus:ring-brand-600/20 focus:outline-none">
                 </div>
-
                 <div>
                     <label for="skill" class="block text-sm font-medium text-slate-700 mb-1">Matière / Technologie</label>
                     <select name="skill" id="skill" class="w-full rounded-lg border-slate-300 shadow-sm border p-2.5 text-sm focus:border-brand-600 focus:ring focus:ring-brand-600/20 focus:outline-none bg-white">
-                        <?php foreach($skills as $skill): ?>
-                            <option value="<?= $skill['name']?>"><?= $skill['name']?></option>
-                        <?php endforeach; ?>
+                        <?php if (isset($skills) && is_array($skills)): ?>
+                            <?php foreach($skills as $skill): ?>
+                                <option value="<?= htmlspecialchars($skill['name']) ?>"><?= htmlspecialchars($skill['name']) ?></option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </select>
                 </div>
-
                 <div>
                     <label for="description" class="block text-sm font-medium text-slate-700 mb-1">Détaillez votre demande</label>
                     <textarea name="description" id="description" rows="4" required placeholder="Expliquez ce que vous essayez de faire et l'erreur obtenue..."
                               class="w-full rounded-lg border-slate-300 shadow-sm border p-2.5 text-sm focus:border-brand-600 focus:ring focus:ring-brand-600/20 focus:outline-none"></textarea>
                 </div>
-
                 <div class="pt-4 border-t border-slate-200 flex justify-end space-x-3">
                     <button type="button" id="cancelModalBtn" class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 transition">
                         Annuler
@@ -302,34 +231,30 @@ if (!isset($currentUser)) {
                     </button>
                 </div>
             </form>
-
         </div>
     </div>
 </div>
-</body>
-<script>
 
+<script>
     const modal = document.getElementById('helpModal');
     const openBtn = document.getElementById('openModalBtn');
     const closeBtn = document.getElementById('closeModalBtn');
     const cancelBtn = document.getElementById('cancelModalBtn');
     const overlay = document.getElementById('modalOverlay');
 
-
     openBtn.addEventListener('click', () => {
         modal.classList.remove('hidden');
         document.body.classList.add('overflow-hidden');
     });
-
 
     const closeModal = () => {
         modal.classList.add('hidden');
         document.body.classList.remove('overflow-hidden');
     };
 
-
     closeBtn.addEventListener('click', closeModal);
     cancelBtn.addEventListener('click', closeModal);
     overlay.addEventListener('click', closeModal);
 </script>
+</body>
 </html>

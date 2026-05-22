@@ -83,4 +83,52 @@ class HelpRequestController
         header('Location: index.php?route=dashboard');
         exit();
     }
+
+    public function resolve(){
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: index.php?route=login');
+            exit();
+        }
+
+        $ticketId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+        if ($ticketId > 0) {
+            try {
+                $helpRequest = $this->helpRepo->getHelpById($ticketId);
+
+                if ($helpRequest) {
+                    $this->helpRepo->markAsResolved($helpRequest);
+                }
+            } catch (Exception $e) {
+                $_SESSION['error_message'] = $e->getMessage();
+            }
+        }
+    }
+
+    // Dans src/Controllers/HelpRequestController.php
+
+    public function myRequests(): void
+    {
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: index.php?route=login');
+            exit();
+        }
+
+        $userId = (int)$_SESSION['user_id'];
+
+        $currentUser = $this->userRepo->getUserById($userId);
+
+        $myRequests = $this->helpRepo->getRequestsByUserId($userId);
+
+        require_once __DIR__ . '/../../views/my-requests.php';
+    }
 }
