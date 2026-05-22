@@ -1,17 +1,14 @@
 <?php
-// 1. On démarre la session si ce n'est pas fait
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// 2. Si l'utilisateur n'est même pas connecté en session -> Login
+
 if (!isset($_SESSION['user_id'])) {
     header('Location: ../index.php?route=login');
     exit();
 }
 
-// 3. S'il est connecté en session, mais que $currentUser n'existe pas,
-// c'est qu'il a tapé l'URL du fichier en direct. On le redirige vers le vrai routeur !
 if (!isset($currentUser)) {
     header('Location: ../index.php?route=dashboard');
     exit();
@@ -114,7 +111,7 @@ if (!isset($currentUser)) {
                     </div>
                 </div>
             </div>
-<!--        display active help requests-->
+
             <div class="bg-white shadow-sm border border-slate-200 rounded-xl overflow-hidden mb-8">
                 <div class="px-6 py-5 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
                     <h3 class="text-base font-semibold leading-6 text-slate-900">Demandes d'aide récentes</h3>
@@ -141,34 +138,50 @@ if (!isset($currentUser)) {
                                         ?>
                                         <div class="mt-1 flex-shrink-0 w-2.5 h-2.5 rounded-full <?= $statusColor ?>"></div>
                                         <div>
-                                            <h4 class="text-sm font-semibold text-brand-900 hover:underline cursor-pointer">
-                                                <?= htmlspecialchars($request['title'] ?? $request['subject'] ?? 'Demande d\'aide') ?>
-                                            </h4>
+                                            <div class="flex items-center gap-2">
+                                                <h4 class="text-sm font-semibold text-brand-900 hover:underline cursor-pointer">
+                                                    <?= htmlspecialchars($request['title'] ?? $request['subject'] ?? 'Demande d\'aide') ?>
+                                                </h4>
+                                                <?php
+                                                $skillName = $skillsRepo->findSkillById($request['id_skill'])->getName();
+                                                if (!empty($skillName)):
+                                                    ?>
+                                                    <span class="inline-flex items-center rounded-md bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700 ring-1 ring-inset ring-brand-700/10">
+                                                        <?= htmlspecialchars($skillName) ?>
+                                                    </span>
+                                                <?php endif; ?>
+                                            </div>
                                             <p class="text-sm text-slate-600 mt-1 max-w-2xl">
                                                 <?= htmlspecialchars($request['description'] ?? '') ?>
                                             </p>
                                             <div class="mt-2 flex items-center space-x-4 text-xs text-slate-500">
-                                <span class="font-medium text-slate-700">
-                                    Par : <?= htmlspecialchars($request['firstname'] . ' ' . $request['lastname']) ?>
-                                </span>
+                                                <span class="font-medium text-slate-700">
+                                                    Par : <?= htmlspecialchars($request['firstname'] . ' ' . $request['lastname']) ?>
+                                                </span>
                                                 <span>• Créé le : <?= date('d/m/Y à H:i', strtotime($request['created_at'])) ?></span>
-
                                             </div>
-                                            <?php
-                                            $skillName = $skillsRepo->findSkillById($request['id_skill'])->getName();
-                                            if (!empty($skillName)):
-                                                ?>
-                                                <span class="inline-flex items-center rounded-md bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700 ring-1 ring-inset ring-brand-700/10">
-                                <?= htmlspecialchars($skillName) ?>
-                            </span>
-                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <div>
+                                        <?php
+                                        // 🌟 CORRECTION : Logique conditionnelle pour les actions du ticket active
+                                        $isAuthor = (int)($request['id_student'] ?? $request['id_learner'] ?? 0) === (int)$_SESSION['user_id'];
+                                        $status = $request['status'] ?? 'pending';
+
+                                        if ($status === 'assigned'): ?>
+                                            <span class="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-md text-blue-700 bg-blue-50 border border-blue-200 shadow-sm">
+                                                Assigné
+                                            </span>
+                                        <?php elseif ($status === 'pending' && !$isAuthor): ?>
                                             <a href="index.php?route=accept-ticket&id=<?= $request['id'] ?>"
                                                class="inline-flex items-center px-3 py-1.5 border border-slate-300 text-xs font-semibold rounded-md text-slate-700 bg-white hover:bg-slate-50 shadow-sm transition">
                                                 Aider
                                             </a>
+                                        <?php else: ?>
+                                            <button class="inline-flex items-center px-3 py-1.5 border border-slate-300 text-xs font-semibold rounded-md text-slate-400 bg-slate-50 cursor-not-allowed shadow-sm">
+                                                Votre demande
+                                            </button>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </li>
@@ -178,17 +191,17 @@ if (!isset($currentUser)) {
 
                 </ul>
             </div>
-<!--        Display resolved help requests-->
+
             <div class="bg-white shadow-sm border border-slate-200 rounded-xl overflow-hidden">
                 <div class="px-6 py-5 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
-                    <h3 class="text-base font-semibold leading-6 text-slate-900">Demandes d'aide resolue</h3>
+                    <h3 class="text-base font-semibold leading-6 text-slate-900">Demandes d'aide résolues</h3>
                 </div>
 
                 <ul class="divide-y divide-slate-200">
 
                     <?php if (empty($resolvedRequests)): ?>
                         <li class="p-6 text-center text-sm text-slate-500">
-                            Aucune demande d'aide n'est publier pour le moment. Soyez le premier à demander !
+                            Aucune demande d'aide n'est publiée pour le moment. Soyez le premier à demander !
                         </li>
                     <?php else: ?>
 
@@ -196,45 +209,36 @@ if (!isset($currentUser)) {
                             <li class="p-6 hover:bg-slate-50 transition">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-start space-x-3">
-                                        <div class="mt-1 flex-shrink-0 w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></div>
+                                        <div class="mt-1 flex-shrink-0 w-2.5 h-2.5 rounded-full bg-green-500"></div>
                                         <div>
-                                            <h4 class="text-sm font-semibold text-brand-900 hover:underline cursor-pointer">
-                                                <?= htmlspecialchars($request['title'] ?? $request['subject'] ?? 'Demande d\'aide') ?>
-                                            </h4>
+                                            <div class="flex items-center gap-2">
+                                                <h4 class="text-sm font-semibold text-brand-900 hover:underline cursor-pointer">
+                                                    <?= htmlspecialchars($request['title'] ?? $request['subject'] ?? 'Demande d\'aide') ?>
+                                                </h4>
+                                                <?php
+                                                $skillName = $skillsRepo->findSkillById($request['id_skill'])->getName();
+                                                if (!empty($skillName)):
+                                                    ?>
+                                                    <span class="inline-flex items-center rounded-md bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700 ring-1 ring-inset ring-brand-700/10">
+                                                        <?= htmlspecialchars($skillName) ?>
+                                                    </span>
+                                                <?php endif; ?>
+                                            </div>
                                             <p class="text-sm text-slate-600 mt-1 max-w-2xl">
                                                 <?= htmlspecialchars($request['description'] ?? '') ?>
                                             </p>
                                             <div class="mt-2 flex items-center space-x-4 text-xs text-slate-500">
-                                <span class="font-medium text-slate-700">
-                                    Par : <?= htmlspecialchars($request['firstname'] . ' ' . $request['lastname']) ?>
-                                </span>
+                                                <span class="font-medium text-slate-700">
+                                                    Par : <?= htmlspecialchars($request['firstname'] . ' ' . $request['lastname']) ?>
+                                                </span>
                                                 <span>• Créé le : <?= date('d/m/Y à H:i', strtotime($request['created_at'])) ?></span>
-                                                <?php if (!empty($request['skill_label'])): ?>
-                                                    <span class="inline-flex items-center rounded-md bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-600">
-                                        <?= htmlspecialchars($request['skill_label']) ?>
-                                    </span>
-                                                <?php endif; ?>
                                             </div>
-                                            <?php
-                                            $skillName = $skillsRepo->findSkillById($request['id_skill'])->getName();
-                                            if (!empty($skillName)):
-                                                ?>
-                                                <span class="inline-flex items-center rounded-md bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700 ring-1 ring-inset ring-brand-700/10">
-                                <?= htmlspecialchars($skillName) ?>
-                            </span>
-                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <div>
-                                        <?php if ($currentUser->getRole() === 'tutor' || $currentUser->getRole() === 'admin'): ?>
-                                            <button class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-semibold rounded-md text-white bg-brand-600 hover:bg-brand-700 shadow-sm transition">
-                                                Rejoindre / Aider
-                                            </button>
-                                        <?php else: ?>
-                                            <button class="inline-flex items-center px-3 py-1.5 border border-slate-300 text-xs font-semibold rounded-md text-slate-700 bg-white hover:bg-slate-50 shadow-sm transition">
-                                                Voir les détails
-                                            </button>
-                                        <?php endif; ?>
+                                        <span class="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-md text-green-700 bg-green-50 border border-green-200 shadow-sm">
+                                            Résolu
+                                        </span>
                                     </div>
                                 </div>
                             </li>
@@ -248,6 +252,7 @@ if (!isset($currentUser)) {
         </main>
     </div>
 </div>
+
 <div id="helpModal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div id="modalOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
@@ -277,7 +282,7 @@ if (!isset($currentUser)) {
                     <label for="skill" class="block text-sm font-medium text-slate-700 mb-1">Matière / Technologie</label>
                     <select name="skill" id="skill" class="w-full rounded-lg border-slate-300 shadow-sm border p-2.5 text-sm focus:border-brand-600 focus:ring focus:ring-brand-600/20 focus:outline-none bg-white">
                         <?php foreach($skills as $skill): ?>
-                        <option value="<?= $skill['name']?>"><?= $skill['name']?></option>
+                            <option value="<?= $skill['name']?>"><?= $skill['name']?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -303,28 +308,28 @@ if (!isset($currentUser)) {
 </div>
 </body>
 <script>
-    // Récupération des éléments
+
     const modal = document.getElementById('helpModal');
     const openBtn = document.getElementById('openModalBtn');
     const closeBtn = document.getElementById('closeModalBtn');
     const cancelBtn = document.getElementById('cancelModalBtn');
     const overlay = document.getElementById('modalOverlay');
 
-    // Fonction pour ouvrir la modal
+
     openBtn.addEventListener('click', () => {
         modal.classList.remove('hidden');
-        document.body.classList.add('overflow-hidden'); // Empêche de scroller le fond
+        document.body.classList.add('overflow-hidden');
     });
 
-    // Fonction pour fermer la modal
+
     const closeModal = () => {
         modal.classList.add('hidden');
         document.body.classList.remove('overflow-hidden');
     };
 
-    // Événements de fermeture
+
     closeBtn.addEventListener('click', closeModal);
     cancelBtn.addEventListener('click', closeModal);
-    overlay.addEventListener('click', closeModal); // Ferme si on clique à côté de la modal
+    overlay.addEventListener('click', closeModal);
 </script>
 </html>

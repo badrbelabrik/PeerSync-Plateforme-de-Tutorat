@@ -28,7 +28,7 @@ try {
             'firstname'  => 'badr',
             'lastname'   => 'belabrik',
             'email'      => 'badr.belabrik@gmail.com',
-            'password'   => password_hash('realmadrid123', PASSWORD_BCRYPT), // HACHAGE ICI !
+            'password'   => password_hash('1234', PASSWORD_BCRYPT), // HACHAGE ICI !
             'id_role' => 1,
             'points'     => 0
         ],
@@ -36,7 +36,7 @@ try {
             'firstname'  => 'yahya',
             'lastname'   => 'bahou',
             'email'      => 'yahya@gmail.com',
-            'password'   => password_hash('realmadrid123', PASSWORD_BCRYPT),
+            'password'   => password_hash('1234', PASSWORD_BCRYPT),
             'id_role' => 2,
             'points'     => 0
         ],
@@ -44,7 +44,7 @@ try {
             'firstname'  => 'hassan',
             'lastname'   => 'yacoubi',
             'email'      => 'hassan@gmail.com',
-            'password'   => password_hash('realmadrid123', PASSWORD_BCRYPT),
+            'password'   => password_hash('1234', PASSWORD_BCRYPT),
             'id_role' => 2,
             'points'     => 0
         ]
